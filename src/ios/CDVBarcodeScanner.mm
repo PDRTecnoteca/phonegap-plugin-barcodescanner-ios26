@@ -773,7 +773,28 @@ parentViewController:(UIViewController*)parentViewController
     previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
 
     if ([previewLayer.connection isVideoOrientationSupported]) {
-        [previewLayer.connection setVideoOrientation:[[UIApplication sharedApplication] statusBarOrientation]];
+        if ([previewLayer.connection isVideoOrientationSupported]) {
+            UIInterfaceOrientation orientation = [UIApplication sharedApplication].windows.firstObject.windowScene.interfaceOrientation;
+            AVCaptureVideoOrientation videoOrientation;
+            
+            switch (orientation) {
+                case UIInterfaceOrientationLandscapeLeft:
+                    videoOrientation = AVCaptureVideoOrientationLandscapeLeft;
+                    break;
+                case UIInterfaceOrientationLandscapeRight:
+                    videoOrientation = AVCaptureVideoOrientationLandscapeRight;
+                    break;
+                case UIInterfaceOrientationPortraitUpsideDown:
+                    videoOrientation = AVCaptureVideoOrientationPortraitUpsideDown;
+                    break;
+                case UIInterfaceOrientationPortrait:
+                default:
+                    videoOrientation = AVCaptureVideoOrientationPortrait;
+                    break;
+            }
+            
+            [previewLayer.connection setVideoOrientation:videoOrientation];
+        }
     }
 
     [self.view.layer insertSublayer:previewLayer below:[[self.view.layer sublayers] objectAtIndex:0]];
